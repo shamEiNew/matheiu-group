@@ -84,7 +84,7 @@ Realistic Lean 4 milestones, in order:
 3. The classification of transitive groups of prime degree 23 (7 groups).
 4. The resolvent certificate for Gal(f) ⊆ M23, verified by exact arithmetic.
 
-## Repo layout (proposed)
+## Repo layout (temporary))
 
 ```
 arxiv/          the paper source
@@ -98,5 +98,4 @@ formal/         Lean 4 experiments
 
 `game/index.html` — **The Last Card**: a 23-card, five-act interactive journey from
 "what is a shuffle" to the miracle fixed point, with quizzes, a shuffle lab, and the
-seven-covers interactive. Published (private until shared):
-https://claude.ai/code/artifact/bdf7cfb8-4179-4a12-a695-2ade667cb54b
+seven-covers interactive.
