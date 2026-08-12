@@ -1,20 +1,23 @@
 # Unpacking "$M_{23}$ is a Galois group over $\mathbb{Q}$" — Verification Roadmap
 
 Paper: Huang, Jackson, Lee, Poonen, Pries, Zhang (Aug 2026), [arxiv/M23.tex](arxiv/M23.tex).
+
 Authors' code (Magma): https://github.com/shaowuz/m23isgalois
+
 Paper Link : https://arxiv.org/pdf/2608.08538
 
 
 The paper closes a 40-year-old gap: 25 of the 26 sporadic simple groups were realized
 as Galois groups over Q during 1984–1989; M23 was the last holdout. This repo unpacks
-every step, re-verifies everything with **open-source** tools, and explains the result
+every step, attempts to verify everything with **open-source** tools, and tries to explain the result
 at different level of background.
 
-## Why open-source re-verification matters
+## open-source re-verification matters
 
 The paper's final certification uses **Magma** (closed source). The single most valuable
 technical contribution would be a crowd effort that can makean independent verification chain
-using only softwares like GAP, Pari, Python etc.
+using only softwares like GAP, Pari, Python etc. Moreover it helps us assimilate the construction
+in more better way as author of the papers themselves suggest some questions which are unanswered.
 
 ## The paper's claims, mapped to verification tools
 
