@@ -1,0 +1,31 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["95b097b501f25f22.olean"],
+  "m": false,
+  "i": "c5c39e13ec6887c6.ilean",
+  "c": "191f3b5346adc784.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/.lake/build/lib/lean /home/sshivkumar/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean /mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/M23Formal.lean -o /mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/.lake/build/lib/lean/M23Formal.olean -i /mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/.lake/build/lib/lean/M23Formal.ilean -c /mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/.lake/build/ir/M23Formal.c --setup /mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/.lake/build/ir/M23Formal.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["deps",
+   [["m23formal/M23Formal:extraDep",
+     [["@m23formal:extraDep", "00000000000006bb"]]],
+    ["imports", "00000000000006bb"]]],
+  ["libs",
+   [["import dynlibs", "00000000000006bb"],
+    ["package external libraries", "00000000000006bb"],
+    ["module dynlibs", "00000000000006bb"],
+    ["module plugins", "00000000000006bb"]]],
+  ["Lean 4.33.0, commit d8b18978322de05a8f3dba51ef03cf5461676c17",
+   "3eca9d16ab6c877d"],
+  ["/mnt/c/Users/sshivkumar/Desktop/Sham/Projects/mathieu-group/formal/M23Formal/M23Formal.lean",
+   "d7fbb6a4967ba6d0"],
+  ["options", "00000000000006bb"],
+  ["isModule: false", "feefd2a0d3a1847e"],
+  ["Module.name: M23Formal", "51729c4136e6bc4e"],
+  ["Package.id?: (some m23formal)", "01a87211c663156b"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "04684ab2cd2d4e7c"}

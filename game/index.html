@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="A card-based journey in five acts: how the Mathieu group M23 — the last of the 26 sporadic simple groups — was finally realized as a Galois group over the rational numbers. No mathematics required at the door.">
+<meta property="og:title" content="The Last Card — how M23 became a Galois group">
+<meta property="og:description" content="Forty years, seven covers, one miracle fixed point. Play the story of the last sporadic group.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
+<title>The Last Card — how M23 became a Galois group</title>
+<style>
+  :root {
+    --felt: #111427;
+    --felt-raise: #181c33;
+    --ivory: #f2ecdc;
+    --ivory-dim: #e6dfc9;
+    --ink: #26232e;
+    --ink-soft: #4d4858;
+    --gold: #c9a227;
+    --gold-bright: #e0bc45;
+    --crimson: #a33b3b;
+    --slate: #9aa0b8;
+    --line: rgba(201, 162, 39, 0.35);
+    --serif-display: "Bodoni MT", "Didot", "Playfair Display", "Georgia", serif;
+    --serif-body: "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    --mono: "Consolas", ui-monospace, "Cascadia Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 120% 70% at 50% -10%, #1c2140 0%, var(--felt) 55%),
+      var(--felt);
+    color: var(--ivory);
+    font-family: var(--serif-body);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  /* ---------- header ---------- */
+  header {
+    text-align: center;
+    max-width: 44rem;
+    margin-bottom: 1.1rem;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 0.4rem;
+  }
+  h1 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+    letter-spacing: 0.02em;
+    margin: 0;
+    color: var(--ivory);
+    text-wrap: balance;
+  }
+  h1 .gold { color: var(--gold-bright); }
+  .subtitle {
+    color: var(--slate);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin: 0.45rem 0 0;
+  }
+
+  /* ---------- act tracker ---------- */
+  nav.acts {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.9rem 0 1.3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .act-node {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .act-pip {
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-family: var(--serif-display);
+    font-size: 0.85rem;
+    color: var(--slate);
+    background: transparent;
+    transition: all 0.4s ease;
+  }
+  .act-node.done .act-pip { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .act-node.current .act-pip { border-color: var(--gold-bright); color: var(--gold-bright); box-shadow: 0 0 12px rgba(224,188,69,0.35); }
+  .act-rule { width: 1.6rem; height: 1px; background: var(--line); }
+  .act-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-align: center;
+    margin-top: 0.3rem;
+    display: block;
+  }
+  .act-node.current .act-label { color: var(--gold-bright); }
+
+  /* ---------- the card ---------- */
+  main { width: 100%; max-width: 34rem; perspective: 1400px; }
+
+  .card {
+    background: linear-gradient(168deg, var(--ivory) 0%, var(--ivory-dim) 100%);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 1.5rem 1.7rem 1.4rem;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 18px 40px rgba(0,0,0,0.55),
+      0 4px 10px rgba(0,0,0,0.4);
+    position: relative;
+    animation: deal 0.45s ease both;
+  }
+  @keyframes deal {
+    from { opacity: 0; transform: translateY(14px) rotateX(8deg); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; }
+    .act-pip, .covers .cover { transition: none !important; }
+  }
+
+  /* engraved double border like an old playing card */
+  .card::before {
+    content: "";
+    position: absolute; inset: 8px;
+    border: 1px solid rgba(38,35,46,0.5);
+    border-radius: 9px;
+    pointer-events: none;
+  }
+  .card::after {
+    content: "";
+    position: absolute; inset: 12px;
+    border: 1px solid rgba(38,35,46,0.18);
+    border-radius: 7px;
+    pointer-events: none;
+  }
+
+  .card-corner {
+    position: absolute;
+    font-family: var(--serif-display);
+    font-size: 0.9rem;
+    color: var(--crimson);
+    line-height: 1.05;
+    text-align: center;
+    width: 1.4rem;
+    user-select: none;
+  }
+  .card-corner.tl { top: 14px; left: 14px; }
+  .card-corner.br { bottom: 14px; right: 14px; transform: rotate(180deg); }
+
+  .card-kicker {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--crimson);
+    text-align: center;
+    margin: 0.1rem 0 0.65rem;
+  }
+  .card h2 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-size: 1.45rem;
+    text-align: center;
+    margin: 0 0 0.8rem;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .card .body {
+    font-size: 1rem;
+    line-height: 1.62;
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+  .card .body p { margin: 0 0 0.75rem; }
+  .card .body p:last-child { margin-bottom: 0; }
+  .card .body em { color: var(--crimson); font-style: italic; }
+  .card .body strong { color: var(--ink); }
+  .math {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: rgba(38,35,46,0.07);
+    padding: 0.05em 0.3em;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .bignum {
+    display: block;
+    text-align: center;
+    font-family: var(--serif-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    color: var(--crimson);
+    margin: 0.6rem 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .attrib {
+    display: block;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin-top: 0.4rem;
+  }
+  figure.poly {
+    margin: 0.7rem 0;
+    background: rgba(38,35,46,0.06);
+    border: 1px solid rgba(38,35,46,0.15);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    overflow-x: auto;
+  }
+  figure.poly code {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--ink);
+    white-space: pre;
+  }
+
+  /* ---------- buttons ---------- */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.7rem;
+    margin-top: 1.15rem;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--ivory);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  button:hover { background: var(--crimson); border-color: var(--crimson); }
+  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  button:active { transform: translateY(1px); }
+  button.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  button.ghost:hover { background: rgba(38,35,46,0.08); color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+  .choices { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1rem; }
+  .choice {
+    text-align: left;
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: var(--serif-body);
+    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(38,35,46,0.35);
+    background: transparent;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .choice:hover { background: rgba(163,59,59,0.08); border-color: var(--crimson); color: var(--ink); }
+  .choice.correct { background: rgba(201,162,39,0.18); border-color: var(--gold); }
+  .choice.wrong { background: rgba(163,59,59,0.12); border-color: var(--crimson); opacity: 0.75; }
+  .choice:disabled { cursor: default; }
+  .feedback {
+    margin-top: 0.9rem;
+    padding: 0.7rem 0.9rem;
+    border-left: 3px solid var(--gold);
+    background: rgba(201,162,39,0.1);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    border-radius: 0 6px 6px 0;
+  }
+  .feedback.retry { border-left-color: var(--crimson); background: rgba(163,59,59,0.08); }
+
+  /* ---------- shuffle lab ---------- */
+  .lab { margin-top: 0.9rem; text-align: center; }
+  .lab-deck {
+    display: flex; justify-content: center; gap: 0.5rem;
+    margin: 0.7rem 0 0.8rem;
+  }
+  .mini-card {
+    width: 3rem; height: 4.2rem;
+    background: var(--ivory);
+    border: 1.5px solid var(--ink);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: var(--serif-display);
+    font-size: 1.5rem;
+    color: var(--crimson);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    transition: transform 0.35s ease;
+  }
+  .lab-count {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-top: 0.55rem;
+  }
+
+  /* ---------- seven covers interactive ---------- */
+  .covers-stage { text-align: center; margin-top: 0.5rem; }
+  .covers {
+    position: relative;
+    width: min(17rem, 80vw);
+    height: min(17rem, 80vw);
+    margin: 0.4rem auto 0.6rem;
+  }
+  .cover {
+    position: absolute;
+    width: 3rem; height: 3rem;
+    margin: -1.5rem 0 0 -1.5rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: var(--serif-display);
+    font-size: 1.15rem;
+    display: grid; place-items: center;
+    cursor: pointer;
+    padding: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    transition: left 0.8s cubic-bezier(.5,0,.3,1), top 0.8s cubic-bezier(.5,0,.3,1), background 0.3s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  }
+  .cover:hover { background: #fff; }
+  .cover.found { background: var(--gold); border-color: var(--gold); }
+  .covers-note {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 0.3rem;
+    min-height: 1.2em;
+  }
+
+  /* ---------- footer / rank ---------- */
+  .rank-bar {
+    margin-top: 1.4rem;
+    text-align: center;
+  }
+  .rank-label {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .rank-name {
+    font-family: var(--serif-display);
+    font-size: 1.15rem;
+    color: var(--gold-bright);
+    margin-top: 0.15rem;
+  }
+  .score-note {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--slate);
+    margin-top: 0.35rem;
+  }
+  footer {
+    margin-top: 2rem;
+    font-size: 0.78rem;
+    color: var(--slate);
+    text-align: center;
+    max-width: 36rem;
+    line-height: 1.6;
+  }
+  footer a { color: var(--gold-bright); }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">A journey in five acts &middot; no mathematics required at the door</p>
+  <h1>The <span class="gold">Last</span> Card</h1>
+  <p class="subtitle">How the Mathieu group M<sub>23</sub> — the final holdout of 26 exceptional symmetries —
+  was caught in an ordinary equation, forty years after all its siblings.</p>
+</header>
+
+<nav class="acts" id="actTracker" aria-label="Act progress"></nav>
+
+<main>
+  <div id="stage" aria-live="polite"></div>
+  <div class="rank-bar">
+    <div class="rank-label">Your rank</div>
+    <div class="rank-name" id="rankName">Apprentice Shuffler</div>
+    <div class="score-note" id="scoreNote"></div>
+  </div>
+</main>
+
+<footer>
+  Based on <em>“The Mathieu group M<sub>23</sub> is a Galois group over&nbsp;ℚ”</em> by
+  Huang, Jackson, Lee, Poonen, Pries &amp; Zhang (2026). Every mathematical claim in this game
+  is checked by open code in the companion repository. Progress is saved in your browser.
+  <span id="resetWrap">&middot; <a href="#" id="resetLink">restart from the first card</a></span>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   DECK — the full story, card by card.
+   type: "story" | "quiz" | "lab" | "covers" | "finale"
+   ============================================================ */
+const ACTS = [
+  { num: "I",   label: "Shuffles" },
+  { num: "II",  label: "The Atlas" },
+  { num: "III", label: "Equations" },
+  { num: "IV",  label: "The Hunt" },
+  { num: "V",   label: "The Miracle" },
+];
+
+const RANKS = [
+  "Apprentice Shuffler",     // act 1
+  "Deck Theorist",           // act 2
+  "Atlas Cartographer",      // act 3
+  "Root Whisperer",          // act 4
+  "Cover Hunter",            // act 5
+  "Witness of M₂₃" // finished
+];
+
+const DECK = [
+
+/* ---------------- ACT I : SHUFFLES ---------------- */
+{ act: 0, type: "story", kicker: "Act I · Card 1", title: "Take twenty-three cards",
+  body: `<p>This is a true story. It involves a mathematician killed in a duel at twenty,
+  a family of twenty-six impossibly rare symmetries, a forty-year manhunt, and one miracle
+  that nobody — not even the people who found it — can explain.</p>
+  <p>And all of it is about <strong>shuffling 23 cards</strong>.</p>` },
+
+{ act: 0, type: "story", kicker: "Act I · Card 2", title: "A shuffle is a rule",
+  body: `<p>A <em>shuffle</em> is any rule for rearranging the deck: “swap the top two,”
+  “move the bottom card to the top,” “reverse everything.”</p>
+  <p>Three small observations, each obvious on its own:</p>
+  <p>① Doing one shuffle, then another, gives&hellip; a shuffle.<br>
+  ② “Do nothing” counts as a (very lazy) shuffle.<br>
+  ③ Every shuffle can be undone by another shuffle.</p>
+  <p>Try it below — shuffle four cards and watch the rules hold.</p>`,
+  lab: true },
+
+{ act: 0, type: "quiz", kicker: "Act I · Question", title: "The first test",
+  question: `<p>You swap the top two cards. Then you swap the top two cards again.
+  What have you done to the deck, overall?</p>`,
+  choices: [
+    { t: "Nothing at all — it's back where it started.", ok: true },
+    { t: "Reversed the whole deck." },
+    { t: "Moved one card two positions down." },
+  ],
+  explain: `Swapping twice undoes the swap. The combined effect is the “do nothing” shuffle —
+  mathematicians call it the <em>identity</em>. You've just verified your first group equation:
+  <span class="math">g&sup2; = 1</span>.` },
+
+{ act: 0, type: "story", kicker: "Act I · Card 3", title: "A closed world of moves",
+  body: `<p>Any collection of shuffles with those three properties — combining stays inside,
+  “do nothing” is included, everything can be undone — is called a <strong>group</strong>.</p>
+  <p>A group is the arithmetic of symmetry. Rotations of a snowflake form a group.
+  Moves of a Rubik's cube form a group. The 26 letters of a substitution cipher form a group.</p>
+  <p>All <span class="bignum">25,852,016,738,884,976,640,000</span> shuffles of 23 cards
+  form one gigantic group. Our story is about a very strange, very small corner of it.</p>` },
+
+/* ---------------- ACT II : THE ATLAS ---------------- */
+{ act: 1, type: "story", kicker: "Act II · Card 1", title: "The atoms of symmetry",
+  body: `<p>Some groups can be broken into smaller groups, the way 12 factors into 2 &times; 2 &times; 3.
+  The ones that <em>cannot</em> be broken down are called <strong>simple groups</strong> —
+  the atoms every other symmetry is built from.</p>
+  <p>Chemists needed a century to build the periodic table.
+  Mathematicians needed about 150 years — and tens of thousands of pages —
+  to finish their own table of these atoms. The final answer, completed in 2004:</p>
+  <p style="text-align:center"><strong>18 infinite families&hellip; plus exactly 26 exceptions.</strong></p>
+  <p>The exceptions fit no pattern. They are called the <em>sporadic groups</em>.</p>` },
+
+{ act: 1, type: "story", kicker: "Act II · Card 2", title: "Monsieur Mathieu's discovery",
+  body: `<p>The first exceptions were found in 1861 by <strong>Émile Mathieu</strong>,
+  a French mathematician studying shuffles with an absurdly strong property.</p>
+  <p>His group <strong>M<sub>23</sub></strong> lives inside the shuffles of 23 cards.
+  Out of 25 sextillion possible shuffles it keeps only</p>
+  <p class="bignum">10,200,960</p>
+  <p>— yet it can still send <em>any four cards you name to any four positions you name</em>.
+  Almost nothing in the mathematical universe can do that without being the whole deck of all shuffles.
+  It is a snowflake: perfectly structured, impossibly rare.</p>` },
+
+{ act: 1, type: "quiz", kicker: "Act II · Question", title: "Simple, not easy",
+  question: `<p>What does it mean that M<sub>23</sub> is a <em>simple</em> group?</p>`,
+  choices: [
+    { t: "It cannot be factored into smaller groups — it's an atom of symmetry.", ok: true },
+    { t: "It's easy to understand." },
+    { t: "It contains only simple shuffles like single swaps." },
+  ],
+  explain: `“Simple” is a term of art — and famously misleading. Simple groups are the
+  <em>unbreakable</em> ones, and the sporadic simples are among the most intricate objects
+  in mathematics. The largest, the Monster, has about 8&times;10&#8309;&sup3; elements.` },
+
+{ act: 1, type: "story", kicker: "Act II · Card 3", title: "Twenty-six snowflakes",
+  body: `<p>By the 1980s all 26 sporadic groups were known — from Mathieu's five up to
+  the <em>Monster</em>, whose smallest faithful action needs 196,883 dimensions.</p>
+  <p>They are mathematics' greatest curiosities. Nobody ordered them; they were simply
+  <em>found</em>, like creatures no taxonomy predicted.</p>
+  <p>And a natural question arose. Symmetries of <em>what</em>?
+  Snowflakes realize hexagonal symmetry. Cubes realize cube symmetry.
+  What everyday mathematical object realizes a sporadic group?</p>
+  <p>One candidate answer had been waiting since 1832 — in the papers of a dying twenty-year-old.</p>` },
+
+/* ---------------- ACT III : EQUATIONS ---------------- */
+{ act: 2, type: "story", kicker: "Act III · Card 1", title: "The boy who saw symmetry in equations",
+  body: `<p><strong>Évariste Galois</strong>, age twenty, spent the night before his fatal duel
+  in 1832 scribbling corrections to a manuscript. His idea, ignored for a decade,
+  now carries his name.</p>
+  <p>Every polynomial equation — like <span class="math">x&sup2; = 2</span> — has roots.
+  Galois saw that the roots can be <em>shuffled</em>, and that the shuffles which preserve
+  every algebraic relation among the roots form a <strong>group</strong>:
+  the equation's hidden symmetry, its <em>Galois group</em>.</p>
+  <p><span class="math">x&sup2; = 2</span> has roots &radic;2 and &minus;&radic;2.
+  Swap them, and every true equation stays true. Its Galois group: two shuffles.
+  A tiny deck of two cards.</p>` },
+
+{ act: 2, type: "quiz", kicker: "Act III · Question", title: "Reading an equation's symmetry",
+  question: `<p>The Galois group of an equation measures, roughly&hellip;</p>`,
+  choices: [
+    { t: "How interchangeable the equation's roots are — which shuffles of them respect all the algebra.", ok: true },
+    { t: "How many roots the equation has." },
+    { t: "How hard the equation is to type." },
+  ],
+  explain: `Exactly. Number of roots = size of the deck; the Galois group = which shuffles
+  of that deck are <em>invisible to algebra</em>. A degree-23 equation deals a deck of 23 roots —
+  and its Galois group lives among the shuffles of 23 cards. See where this is going?` },
+
+{ act: 2, type: "story", kicker: "Act III · Card 2", title: "The inverse problem",
+  body: `<p>Galois theory answers: <em>given an equation, what is its symmetry group?</em></p>
+  <p>Around 1892 mathematicians dared to ask the reverse — the
+  <strong>inverse Galois problem</strong>:</p>
+  <p style="text-align:center"><em>Given a finite group, is there a polynomial with
+  ordinary whole-number coefficients whose symmetry is exactly that group?</em></p>
+  <p>Over 130 years later, this is <strong>still unsolved</strong> in general.
+  The battleground: can each atom — each finite simple group — be realized?
+  For the 26 sporadic snowflakes, the campaign began in earnest in 1984.</p>` },
+
+{ act: 2, type: "story", kicker: "Act III · Card 3", title: "Twenty-five out of twenty-six",
+  body: `<p>1984&ndash;1989 was a golden age. Using a technique called <em>rigidity</em>
+  (John Thompson used it to capture the Monster itself!), researchers realized sporadic group
+  after sporadic group as the symmetry of a rational equation.</p>
+  <p>By 1989 the scoreboard read <strong>25 of 26</strong>.</p>
+  <p>The last holdout was not the Monster. It was one of the <em>smallest</em>:
+  Mathieu's M<sub>23</sub>. It resisted every attack for four decades.
+  Constructions landed agonizingly close — in number worlds like
+  <span class="math">&#8474;(&radic;&minus;7)</span>, just <em>next to</em> the ordinary
+  rational numbers, never in them.</p>` },
+
+{ act: 2, type: "quiz", kicker: "Act III · Question", title: "Why 'over ℚ' is the boss fight",
+  question: `<p>M<sub>23</sub> had been realized as a symmetry group over several
+  <em>enlarged</em> number systems. Why wasn't that enough?</p>`,
+  choices: [
+    { t: "The original problem demands plain rational coefficients — the smallest number world, with the least room to maneuver.", ok: true },
+    { t: "Those constructions were all computed incorrectly." },
+    { t: "Enlarged number systems are not allowed in algebra." },
+  ],
+  explain: `The rational numbers &#8474; are the home field and the hardest venue:
+  every extra number you're allowed to use (like &radic;&minus;7) gives the construction
+  more freedom. Realizing M<sub>23</sub> over &#8474; itself — with zero extra freedom —
+  is precisely what stayed open until 2026.` },
+
+/* ---------------- ACT IV : THE HUNT ---------------- */
+{ act: 3, type: "story", kicker: "Act IV · Card 1", title: "The rigidity trick",
+  body: `<p>How do you build an equation with a prescribed symmetry? The classical recipe:</p>
+  <p>① Choose three <em>types</em> of shuffle in your group (types = conjugacy classes,
+  e.g. “the 8-fold swaps”, “the full 23-cycles”).<br>
+  ② Count the essentially different triples (g&#8321;, g&#8322;, g&#8323;) — one of each type —
+  with <span class="math">g&#8321;g&#8322;g&#8323; = 1</span>, generating the whole group.</p>
+  <p>If the count is exactly <strong>1</strong>, the triple is called <strong>rigid</strong>,
+  and a beautiful theorem hands you a rational equation for free.
+  Uniqueness leaves the construction nowhere to hide — so it must be defined
+  over plain &#8474;.</p>` },
+
+{ act: 3, type: "story", kicker: "Act IV · Card 2", title: "Why M23 resisted for forty years",
+  body: `<p>The 2026 team did what many had done before, exhaustively:
+  for <em>every</em> viable choice of three shuffle-types in M<sub>23</sub>,
+  they computed the count.</p>
+  <p style="text-align:center"><strong>It is never 1.</strong></p>
+  <p>Rigidity — the master key that opened the other 25 doors, including the Monster's —
+  <em>provably does not fit this lock</em>. That is why M<sub>23</sub> was last.</p>
+  <p>The best case: choosing types (2A, 23A, 23B) — the 8-fold swaps and the two flavors
+  of 23-cycle — the count is <strong>seven</strong>.</p>`,
+},
+
+{ act: 3, type: "quiz", kicker: "Act IV · Question", title: "Seven locks",
+  question: `<p>The count for the best triple is 7, not 1. Why is that a problem?</p>`,
+  choices: [
+    { t: "With 7 candidates instead of one forced choice, the construction can 'live' in a bigger number world spread across all seven — no guarantee any single one is rational.", ok: true },
+    { t: "Seven is an unlucky number in group theory." },
+    { t: "It means M₂₃ is not a real group." },
+  ],
+  explain: `When the count is 1, symmetry of numbers has a single target — it must fix it,
+  forcing rationality. When it's 7, the symmetries of numbers may <em>permute</em> the seven
+  candidates among themselves, smearing them across a number world of degree up to 7.
+  The whole 40-year obstruction lives in this one sentence.` },
+
+{ act: 3, type: "story", kicker: "Act IV · Card 3", title: "Three shuffles, one surface",
+  body: `<p>Here are the actual protagonists — three shuffles of {1,&hellip;,23}
+  with <span class="math">g&#8321;g&#8322;g&#8323; = 1</span>:</p>
+  <figure class="poly"><code>g1 = (1,11)(2,23)(3,8)(4,16)(5,21)(7,20)(15,19)(18,22)
+g2 = (1,2,11,10,16,9,6,3,23,19,20,14,21,17,4,8,22,5,18,15,13,7,12)
+g3 = (1,2,3,4,10,11,12,7,19,18,8,6,9,16,17,21,22,5,14,20,13,15,23)</code></figure>
+  <p>Geometry enters: such a triple is a set of <em>wrapping instructions</em> —
+  it describes a 23-sheeted surface wrapped around a sphere, branching over three
+  special points. The seven candidate triples give <strong>seven different surfaces</strong>,
+  each a so-called genus-4 curve.</p>
+  <p>To hunt them, the team computed each surface <em>numerically</em>, to hundreds of
+  decimal places, using hyperbolic tilings by triangles with angles
+  &pi;/2, &pi;/23, &pi;/23.</p>` },
+
+{ act: 3, type: "story", kicker: "Act IV · Card 4", title: "The numbers confess",
+  body: `<p>A numerical curve is a cloud of digits: <span class="math">0.51239&hellip;</span>
+  What exact number is that? An algorithm called <strong>PSLQ</strong> — a kind of
+  mathematical sommelier — sniffs a decimal expansion and names the exact algebraic
+  number it came from.</p>
+  <p>The first surprise: all seven surfaces have coordinates in the tiny number world
+  <span class="math">&#8474;(&radic;&minus;23)</span> — one small step from the rationals.
+  The theory promised only a world of degree up to 14. Call it <em>miracle&nbsp;#1</em>.</p>
+  <p>But one step is still one step too many. Seven candidates on the table.
+  The symmetries of numbers get to shuffle them. Everything depends on <em>how</em>.</p>` },
+
+/* ---------------- ACT V : THE MIRACLE ---------------- */
+{ act: 4, type: "covers", kicker: "Act V · The table", title: "Find the card that never moves",
+  intro: `<p>Seven covers. The symmetry of numbers (swapping &radic;&minus;23 &harr; &minus;&radic;&minus;23,
+  and everything it drags along) shuffles them. Deal the symmetry a few times —
+  then <strong>click the cover that never moves</strong>.</p>` },
+
+{ act: 4, type: "story", kicker: "Act V · Card 2", title: "“We do not have a conceptual explanation for this.”",
+  body: `<p>Everyone expected the seven to be smeared into one indivisible orbit —
+  that is what generically happens, and what happened in every earlier attempt on M<sub>23</sub>.</p>
+  <p>Instead: <strong>one cover is fixed by every symmetry of numbers.</strong></p>
+  <p>The authors of the paper — including some of the world's leading arithmetic
+  geometers — write, in print:</p>
+  <p style="text-align:center"><em>“Miraculously, instead 𝔊<sub>ℚ</sub> has a fixed point!
+  We do not have a conceptual explanation for this.”</em></p>
+  <p>A fixed candidate has nowhere to hide, exactly as in the rigidity trick.
+  Descent theory converts the fixed point into a genuine curve over the rational numbers —
+  and from it, an equation.</p>` },
+
+{ act: 4, type: "quiz", kicker: "Act V · Question", title: "Why the fixed point wins the game",
+  question: `<p>Why does one <em>unmoved</em> cover crack the whole 40-year problem?</p>`,
+  choices: [
+    { t: "A candidate fixed by all number-symmetries is forced to be definable over plain ℚ — the rigidity conclusion, recovered without rigidity.", ok: true },
+    { t: "Because seven minus six is one." },
+    { t: "It proves the other six covers were computational errors." },
+  ],
+  explain: `That's the heart of the paper. Rigidity forced rationality through uniqueness
+  (count = 1). Here the count is 7 — but a <em>fixed point</em> of the number-symmetry
+  action is just as trapped as a unique point. Same conclusion, new door.
+  Nobody knows <em>why</em> the fixed point exists. It simply does.` },
+
+{ act: 4, type: "story", kicker: "Act V · Card 3", title: "The equation itself",
+  body: `<p>From the fixed cover, months of exact algebra — Riemann&ndash;Roch spaces,
+  Chinese-remainder reconstruction, reduction modulo 31 — produced a family of equations,
+  then this single specimen:</p>
+  <figure class="poly"><code>x²³ − 184x²¹ − 1150x²⁰ + 26151x¹⁹ + 18400x¹⁸
+    − 1808490x¹⁷ + 1545462x¹⁶ + 67672923x¹⁵
+    − 42732528x¹⁴ − 1333395744x¹³ + 290615166x¹²
+    + 10550424369x¹¹ + 3700476348x¹⁰
+    + 35123826654x⁹ − 194398310718x⁸
+    − 1023887308293x⁷ + 3961650395556x⁶
+    + 1949980486716x⁵ − 28142323927002x⁴
+    + 53599151839311x³ − 46185312415788x²
+    + 19169943578802x − 3150159884154</code></figure>
+  <p>The shuffles of this equation's 23 roots that respect all algebra:
+  <strong>exactly the 10,200,960 shuffles of M<sub>23</sub></strong>.
+  Émile Mathieu's snowflake, caught at last — in an equation a school computer can store.</p>` },
+
+{ act: 4, type: "finale", kicker: "Act V · Final card", title: "The atlas is complete",
+  body: `<p>With M<sub>23</sub> realized, <strong>all 26 sporadic groups are now symmetries
+  of rational equations</strong>. A program begun in 1984 — arguably a question begun
+  with Galois's last night in 1832 — is closed.</p>
+  <p>What remains open is bigger: the inverse Galois problem itself, for all groups.
+  And one small haunting question: <em>why</em> was there a fixed point?</p>
+  <p>Somewhere in that “why” is the next paper. Perhaps yours.</p>` },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const KEY = "lastcard-progress-v1";
+let state = { idx: 0, firstTry: 0, quizzes: 0, attempted: {} };
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (saved && typeof saved.idx === "number" && saved.idx < DECK.length) state = saved;
+} catch (e) { /* fresh start */ }
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const stage = document.getElementById("stage");
+const tracker = document.getElementById("actTracker");
+const rankName = document.getElementById("rankName");
+const scoreNote = document.getElementById("scoreNote");
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function renderTracker() {
+  const currentAct = DECK[Math.min(state.idx, DECK.length - 1)].act;
+  const doneAll = state.idx >= DECK.length - 1 && state.finished;
+  tracker.innerHTML = "";
+  ACTS.forEach((a, i) => {
+    const node = document.createElement("div");
+    node.className = "act-node" + (i < currentAct || doneAll ? " done" : i === currentAct ? " current" : "");
+    node.innerHTML = `<div><span class="act-pip">${a.num}</span><span class="act-label">${a.label}</span></div>`;
+    tracker.appendChild(node);
+    if (i < ACTS.length - 1) {
+      const rule = document.createElement("div");
+      rule.className = "act-rule";
+      tracker.appendChild(rule);
+    }
+  });
+}
+
+function renderRank() {
+  const act = DECK[Math.min(state.idx, DECK.length - 1)].act;
+  rankName.textContent = state.finished ? RANKS[5] : RANKS[act];
+  scoreNote.textContent = state.quizzes
+    ? `questions: ${state.firstTry}/${state.quizzes} on the first try · card ${Math.min(state.idx + 1, DECK.length)} of ${DECK.length}`
+    : `card ${Math.min(state.idx + 1, DECK.length)} of ${DECK.length}`;
+}
+
+function cardShell(c, innerHTML) {
+  return `<div class="card">
+    <div class="card-corner tl">M<br>23</div>
+    <div class="card-corner br">M<br>23</div>
+    <div class="card-kicker">${c.kicker}</div>
+    <h2>${c.title}</h2>
+    ${innerHTML}
+  </div>`;
+}
+
+function render() {
+  renderTracker();
+  renderRank();
+  const c = DECK[state.idx];
+  if (!c) return;
+
+  if (c.type === "story") {
+    stage.innerHTML = cardShell(c, `
+      <div class="body">${c.body}</div>
+      ${c.lab ? labHTML() : ""}
+      <div class="controls">
+        ${state.idx > 0 ? '<button class="ghost" id="backBtn">Back</button>' : ""}
+        <button id="nextBtn">Next card</button>
+      </div>`);
+    if (c.lab) wireLab();
+    wireNav();
+  }
+  else if (c.type === "quiz") {
+    const done = state.attempted[state.idx] === "solved";
+    stage.innerHTML = cardShell(c, `
+      <div class="body">${c.question}</div>
+      <div class="choices" id="choices"></div>
+      <div id="fb"></div>
+      <div class="controls" id="quizNav" style="display:${done ? "flex" : "none"}">
+        <button class="ghost" id="backBtn">Back</button>
+        <button id="nextBtn">Next card</button>
+      </div>`);
+    wireQuiz(c, done);
+    if (done) wireNav();
+  }
+  else if (c.type === "covers") {
+    stage.innerHTML = cardShell(c, `
+      <div class="body">${c.intro}</div>
+      <div class="covers-stage">
+        <div class="covers" id="covers"></div>
+        <div class="covers-note" id="coverNote">deal the symmetry, watch closely&hellip;</div>
+        <div class="controls">
+          <button class="ghost" id="dealBtn">Apply a number-symmetry</button>
+        </div>
+      </div>
+      <div class="controls" id="coverNav" style="display:none">
+        <button class="ghost" id="backBtn">Back</button>
+        <button id="nextBtn">Next card</button>
+      </div>`);
+    wireCovers();
+  }
+  else if (c.type === "finale") {
+    state.finished = true;
+    save();
+    renderRank();
+    renderTracker();
+    const pct = state.quizzes ? Math.round(100 * state.firstTry / state.quizzes) : 100;
+    stage.innerHTML = cardShell(c, `
+      <div class="body">${c.body}
+      <p style="text-align:center; margin-top:1rem">
+        <strong>Rank earned: ${RANKS[5]}</strong><br>
+        <span style="font-size:0.9rem; color:var(--ink-soft)">${state.firstTry} of ${state.quizzes}
+        questions on the first try (${pct}%)</span></p></div>
+      <div class="controls">
+        <button class="ghost" id="backBtn">Back</button>
+        <button id="againBtn">Play again</button>
+      </div>`);
+    document.getElementById("againBtn").addEventListener("click", resetGame);
+    document.getElementById("backBtn").addEventListener("click", () => go(state.idx - 1));
+  }
+}
+
+function wireNav() {
+  const n = document.getElementById("nextBtn");
+  const b = document.getElementById("backBtn");
+  if (n) n.addEventListener("click", () => go(state.idx + 1));
+  if (b) b.addEventListener("click", () => go(state.idx - 1));
+}
+
+function go(i) {
+  state.idx = Math.max(0, Math.min(i, DECK.length - 1));
+  save();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ---------- quiz ---------- */
+function wireQuiz(c, alreadySolved) {
+  const box = document.getElementById("choices");
+  const fb = document.getElementById("fb");
+  // stable shuffle of choices per card index so reloads don't reshuffle
+  const order = c.choices.map((_, i) => i).sort((a, b) => ((a * 7 + state.idx * 3) % 5) - ((b * 7 + state.idx * 3) % 5));
+  order.forEach(i => {
+    const ch = c.choices[i];
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = ch.t;
+    if (alreadySolved) {
+      btn.disabled = true;
+      if (ch.ok) btn.classList.add("correct");
+    } else {
+      btn.addEventListener("click", () => {
+        if (ch.ok) {
+          btn.classList.add("correct");
+          box.querySelectorAll("button").forEach(b => b.disabled = true);
+          if (!(state.idx in state.attempted)) { state.firstTry++; }
+          state.attempted[state.idx] = "solved";
+          state.quizzes = countAttemptedQuizzes();
+          save();
+          fb.innerHTML = `<div class="feedback">${c.explain}</div>`;
+          document.getElementById("quizNav").style.display = "flex";
+          wireNav();
+          renderRank();
+        } else {
+          if (!(state.idx in state.attempted)) state.attempted[state.idx] = "missed";
+          save();
+          btn.classList.add("wrong");
+          btn.disabled = true;
+          fb.innerHTML = `<div class="feedback retry">Not quite — look again. There's a better card on the table.</div>`;
+        }
+      });
+    }
+    box.appendChild(btn);
+  });
+  if (alreadySolved) fb.innerHTML = `<div class="feedback">${c.explain}</div>`;
+}
+function countAttemptedQuizzes() {
+  return Object.keys(state.attempted).length;
+}
+
+/* ---------- shuffle lab (Act I) ---------- */
+const LAB_START = ["A", "K", "Q", "J"];
+let labOrder = [...LAB_START];
+let labMoves = 0;
+
+function labHTML() {
+  return `<div class="lab">
+    <div class="lab-deck" id="labDeck"></div>
+    <div class="controls" style="margin-top:0">
+      <button class="ghost" id="labSwap">Swap first two</button>
+      <button class="ghost" id="labCycle">Cycle &rarr;</button>
+      <button class="ghost" id="labReset">Undo everything</button>
+    </div>
+    <div class="lab-count" id="labCount">0 shuffles combined — still a shuffle</div>
+  </div>`;
+}
+function drawLab() {
+  const deck = document.getElementById("labDeck");
+  deck.innerHTML = labOrder.map(v => `<div class="mini-card">${v}</div>`).join("");
+  const back = labOrder.join("") === LAB_START.join("");
+  document.getElementById("labCount").textContent =
+    labMoves === 0 ? "0 shuffles combined — still a shuffle"
+    : `${labMoves} shuffle${labMoves > 1 ? "s" : ""} combined — still a shuffle${back ? " (and you're back to the start!)" : ""}`;
+}
+function wireLab() {
+  labOrder = [...LAB_START]; labMoves = 0;
+  drawLab();
+  document.getElementById("labSwap").addEventListener("click", () => {
+    [labOrder[0], labOrder[1]] = [labOrder[1], labOrder[0]]; labMoves++; drawLab();
+  });
+  document.getElementById("labCycle").addEventListener("click", () => {
+    labOrder.unshift(labOrder.pop()); labMoves++; drawLab();
+  });
+  document.getElementById("labReset").addEventListener("click", () => {
+    labOrder = [...LAB_START]; labMoves = 0; drawLab();
+  });
+}
+
+/* ---------- seven covers (Act V) ---------- */
+function wireCovers() {
+  const box = document.getElementById("covers");
+  const note = document.getElementById("coverNote");
+  const dealBtn = document.getElementById("dealBtn");
+  const NUMERALS = ["i", "ii", "iii", "iv", "v", "vi", "vii"];
+  const fixedIdx = 3; // which cover is Galois-fixed (constant per page load is fine)
+  let slots = [0, 1, 2, 3, 4, 5, 6]; // slots[k] = which cover currently sits at position k
+  let deals = 0;
+  let solved = false;
+
+  // 7 positions on a circle
+  function posOf(slot) {
+    const R = 42; // percent radius
+    const ang = -Math.PI / 2 + slot * 2 * Math.PI / 7;
+    return { left: 50 + R * Math.cos(ang), top: 50 + R * Math.sin(ang) };
+  }
+
+  const els = [];
+  for (let i = 0; i < 7; i++) {
+    const b = document.createElement("button");
+    b.className = "cover";
+    b.textContent = NUMERALS[i];
+    b.setAttribute("aria-label", `cover ${NUMERALS[i]}`);
+    b.addEventListener("click", () => {
+      if (solved) return;
+      if (deals === 0) { note.textContent = "deal the symmetry at least once first — you can't spot stillness without motion"; return; }
+      if (i === fixedIdx) {
+        solved = true;
+        b.classList.add("found");
+        note.textContent = "★ the fixed cover — field of moduli ℚ. The miracle.";
+        dealBtn.style.display = "none";
+        document.getElementById("coverNav").style.display = "flex";
+        wireNav();
+      } else {
+        note.textContent = `no — cover ${NUMERALS[i]} moved on deal ${deals}. Watch again.`;
+      }
+    });
+    box.appendChild(b);
+    els.push(b);
+  }
+
+  function place() {
+    for (let k = 0; k < 7; k++) {
+      const p = posOf(k);
+      els[slots[k]].style.left = p.left + "%";
+      els[slots[k]].style.top = p.top + "%";
+    }
+  }
+  place();
+
+  dealBtn.addEventListener("click", () => {
+    if (solved) return;
+    deals++;
+    // permute the 6 non-fixed covers among their slots; fixed cover stays put
+    const fixedSlot = slots.indexOf(fixedIdx);
+    const movable = slots.map((c, k) => ({ c, k })).filter(o => o.k !== fixedSlot);
+    // derangement-ish rotation by random offset 1..5
+    const off = 1 + Math.floor(Math.random() * 5);
+    const cs = movable.map(o => o.c);
+    movable.forEach((o, j) => { slots[o.k] = cs[(j + off) % cs.length]; });
+    place();
+    note.textContent = `deal ${deals}: six covers moved. One didn't. Click it.`;
+  });
+}
+
+/* ---------- reset ---------- */
+function resetGame() {
+  state = { idx: 0, firstTry: 0, quizzes: 0, attempted: {} };
+  save();
+  render();
+}
+document.getElementById("resetLink").addEventListener("click", (e) => { e.preventDefault(); resetGame(); });
+
+render();
+</script>
+</body>
+</html>
