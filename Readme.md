@@ -6,11 +6,15 @@ Authors' code (Magma): https://github.com/shaowuz/m23isgalois
 
 Paper Link : https://arxiv.org/pdf/2608.08538
 
-
 The paper closes a 40-year-old gap: 25 of the 26 sporadic simple groups were realized
 as Galois groups over Q during 1984–1989; M23 was the last holdout. This repo unpacks
 every step, attempts to verify everything with **open-source** tools, and tries to explain the result
 at different level of background.
+
+## Summary of $M_{23}$
+
+The $M_{23}$ is a *simple* group of order 10,200,960 and its part of 26 exceptions (sporadic groups) as
+per the classification of finite simple groups. And $M_{23}$ is one of the five groups introduced by [Émile Léonard Mathieu](https://en.wikipedia.org/wiki/%C3%89mile_L%C3%A9onard_Mathieu). Its a multiply transitive permutation groups on 23 objects. 
 
 ## open-source re-verification matters
 
