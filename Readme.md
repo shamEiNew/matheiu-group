@@ -69,7 +69,7 @@ PARI's `polgalois` stops at degree 11. A rigorous open certification that Gal(f)
 4. **Level 3 — expert**: full reworked proof with no "we omit the proof" left standing
    (e.g. the h84^2 singularity claim the authors explicitly skip).
 
-## Visuals / video
+## Visuals / video (TODO)
 
 - Hyperbolic (2,23,23) triangle tiling of the disk (the paper's a, b, c construction) — Python/matplotlib or p5.js.
 - Dessin d'enfant of the degree-23 Belyi cover.
